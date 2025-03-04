@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>临床知识库 - 基于deepseek大模型</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fc;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #d62c2c;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            position: relative;
+            padding: 5px 0;
+        }
+        
+        .nav-item:after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: white;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #d62c2c 0%, #b71c1c 100%);
+            color: white;
+            padding: 45px 0; /* 减小上下padding，从70px改为45px */
+            text-align: center;
+            margin-bottom: 30px; /* 减小底部margin，从40px改为30px */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23ffffff10" d="M30,30 C40,20 60,20 70,30 C80,40 80,60 70,70 C60,80 40,80 30,70 C20,60 20,40 30,30 Z"/></svg>');
+            background-size: 120px 120px;
+            opacity: 0.1;
+        }
+        
+        .hero-title {
+            font-size: 32px; /* 减小标题字体大小，从38px改为32px */
+            margin-bottom: 15px; /* 减小底部margin，从20px改为15px */
+            font-weight: 600;
+        }
+        
+        .hero-description {
+            font-size: 16px; /* 减小描述文字大小，从18px改为16px */
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6; /* 略微减小行高，从1.7改为1.6 */
+        }
+        
+        .knowledge-sections {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 改为3列 */
+            gap: 25px; /* 略微减小间距 */
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 992px) {
+            .knowledge-sections {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .knowledge-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .knowledge-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 25px; /* 略微减小内边距 */
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #f0f0f0;
+        }
+        
+        /* 为中医知识库添加特殊样式 */
+        .knowledge-card.tcm {
+            background-color: #fdf7f0;
+            border: 1px solid #f0e0d2;
+        }
+        
+        .knowledge-card.tcm .knowledge-icon {
+            color: #8b572a;
+        }
+        
+        .knowledge-card.tcm:hover {
+            border-color: #d62c2c;
+        }
+        
+        .knowledge-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border-color: #e8e8e8;
+        }
+        
+        .knowledge-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #d62c2c;
+        }
+        
+        .knowledge-title {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .knowledge-description {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .search-section {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .search-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .search-title:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background-color: #d62c2c;
+        }
+        
+        .search-box {
+            display: flex;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px 0 0 8px;
+            font-size: 16px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .search-button {
+            background-color: #d62c2c;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 0 8px 8px 0;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .search-button:hover {
+            background-color: #b71c1c;
+        }
+        
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+        }
+        
+        .import-btn {
+            display: inline-block; 
+            background-color: #d62c2c; 
+            color: white; 
+            text-decoration: none; 
+            padding: 14px 30px; 
+            border-radius: 8px; 
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 8px rgba(214,44,44,0.2);
+        }
+        
+        .import-btn:hover {
+            background-color: #b71c1c;
+            box-shadow: 0 6px 12px rgba(214,44,44,0.3);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">临床知识库 | Clinical Knowledge Base</div>
+                <nav class="nav-menu">
+                    <a href="#" class="nav-item">首页</a>
+                    <a href="import_knowledge_base.html" class="nav-item">导入知识库</a>
+                    <a href="#" class="nav-item">关于我们</a>
+                    <a href="#" class="nav-item">联系方式</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">基于deepseek大模型的临床知识库</h1>
+            <p class="hero-description">
+                融合中西医理论，利用先进的深度学习技术，为医疗专业人员提供精确、全面的临床知识支持
+            </p>
+        </div>
+    </section>
+    
+    <div class="container">
+        <section class="search-section">
+            <h2 class="search-title">知识检索</h2>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="请输入您的临床问题...">
+                <button class="search-button" onclick="window.location.href='knowledge_answer.html'">搜索</button>
+            </div>
+        </section>
+        
+        <section class="knowledge-sections">
+            <div class="knowledge-card">
+                <div class="knowledge-icon">🏥</div>
+                <h3 class="knowledge-title">内科知识库</h3>
+                <p class="knowledge-description">
+                    心血管、呼吸、消化、内分泌等内科专业知识，融合中西医诊疗方案
+                </p>
+            </div>
+            
+            <div class="knowledge-card">
+                <div class="knowledge-icon">🔪</div>
+                <h3 class="knowledge-title">外科知识库</h3>
+                <p class="knowledge-description">
+                    普外、骨科、神经外科、胸心外科等专业知识，包含最新微创手术技术
+                </p>
+            </div>
+            
+            <!-- 新增中医知识库入口 -->
+            <div class="knowledge-card tcm" onclick="window.location.href='tcm_knowledge.html'">
+                <div class="knowledge-icon">🍃</div>
+                <h3 class="knowledge-title">中医知识库</h3>
+                <p class="knowledge-description">
+                    中医理论、方剂学、针灸学、中药学等传统中医知识体系
+                </p>
+            </div>
+            
+            <div class="knowledge-card">
+                <div class="knowledge-icon">👶</div>
+                <h3 class="knowledge-title">儿科知识库</h3>
+                <p class="knowledge-description">
+                    儿科常见疾病、生长发育、婴幼儿保健等专业知识，结合中医小儿推拿
+                </p>
+            </div>
+            
+            <div class="knowledge-card">
+                <div class="knowledge-icon">👩‍⚕️</div>
+                <h3 class="knowledge-title">妇产科知识库</h3>
+                <p class="knowledge-description">
+                    妇科疾病、产科相关、优生优育等专业知识，包含中医调理方案
+                </p>
+            </div>
+            
+            <!-- 新增药学知识库入口 -->
+            <div class="knowledge-card">
+                <div class="knowledge-icon">💊</div>
+                <h3 class="knowledge-title">药学知识库</h3>
+                <p class="knowledge-description">
+                    药品说明、用药指导、药物相互作用与临床药学知识
+                </p>
+            </div>
+        </section>
+        
+        <!-- 添加导入知识库的快捷入口 -->
+        <section class="search-section">
+            <h2 class="search-title">自定义知识库</h2>
+            <p style="text-align: center; margin-bottom: 25px; color: #555; line-height: 1.6;">
+                导入您自己的医学资料，创建个性化的专业知识库，助力临床诊疗提质增效
+            </p>
+            <div style="text-align: center;">
+                <a href="import_knowledge_base.html" class="import-btn">
+                    导入知识库
+                </a>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© 2025 临床知识库 - 基于deepseek大模型构建</p>
+            <p style="font-size: 14px; margin-top: 10px; color: #aaa;">医者仁心 · 科技赋能</p>
+        </div>
+    </footer>
+
+    <script>
+        // 为知识库卡片添加点击事件
+        document.querySelectorAll('.knowledge-card').forEach(card => {
+            if (!card.hasAttribute('onclick')) { // 如果没有已设置的onclick属性
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('.knowledge-title').textContent;
+                    // 后续可添加页面跳转逻辑
+                    console.log('用户点击了知识库:', title);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

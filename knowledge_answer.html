@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>问答结果 - 临床知识库</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fc;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #d62c2c;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            position: relative;
+            padding: 5px 0;
+        }
+        
+        .nav-item:after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: white;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        
+        .search-bar {
+            background-color: #c41d1d;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .search-container {
+            display: flex;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px 0 0 8px;
+            font-size: 16px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .search-button {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 0 8px 8px 0;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .search-button:hover {
+            background-color: #222;
+        }
+        
+        .content-section {
+            margin: 30px 0;
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 992px) {
+            .content-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .answer-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 30px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .question {
+            background-color: #f8f9fa;
+            border-left: 4px solid #d62c2c;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+            color: #333;
+        }
+        
+        .metadata {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+        
+        .answer {
+            line-height: 1.7;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        .answer p {
+            margin-bottom: 16px;
+        }
+        
+        .answer h3 {
+            margin-top: 25px;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+            font-size: 18px;
+            position: relative;
+            padding-left: 12px;
+        }
+        
+        .answer h3::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 4px;
+            bottom: 4px;
+            width: 4px;
+            background-color: #d62c2c;
+            border-radius: 2px;
+        }
+        
+        .answer ul, .answer ol {
+            padding-left: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .answer li {
+            margin-bottom: 10px;
+        }
+        
+        .answer strong {
+            font-weight: 600;
+            color: #d62c2c;
+        }
+        
+        .sources {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .sources-title {
+            font-size: 16px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .source-item {
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .source-link {
+            color: #d62c2c;
+            text-decoration: none;
+        }
+        
+        .source-link:hover {
+            text-decoration: underline;
+        }
+        
+        .feedback-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+            margin-top: 30px;
+            padding-top: 20px;
+        }
+        
+        .feedback-question {
+            margin-right: 15px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .feedback-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .feedback-btn {
+            background-color: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #555;
+            font-size: 14px;
+        }
+        
+        .feedback-btn:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .feedback-btn.positive {
+            color: #2c974b;
+        }
+        
+        .feedback-btn.positive:hover {
+            background-color: #eafaf1;
+            border-color: #2c974b;
+        }
+        
+        .feedback-btn.negative {
+            color: #d62c2c;
+        }
+        
+        .feedback-btn.negative:hover {
+            background-color: #fff9f9;
+            border-color: #d62c2c;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .knowledge-base-selector {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .selector-title {
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .kb-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .kb-option {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .kb-option:hover {
+            border-color: #d62c2c;
+            background-color: #fff9f9;
+            color: #d62c2c;
+        }
+        
+        .kb-option.active {
+            background-color: #d62c2c;
+            color: white;
+            border-color: #d62c2c;
+        }
+        
+        .related-questions {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 25px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .related-title {
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .question-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .question-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+        }
+        
+        .question-item:last-child {
+            border-bottom: none;
+        }
+        
+        .question-link {
+            text-decoration: none;
+            color: #555;
+            display: block;
+            transition: color 0.2s ease;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .question-link:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #d62c2c;
+        }
+        
+        .question-link:hover {
+            color: #d62c2c;
+        }
+        
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">临床知识库 | Clinical Knowledge Base</div>
+                <nav class="nav-menu">
+                    <a href="clinical_knowledge_prototype.html" class="nav-item">首页</a>
+                    <a href="import_knowledge_base.html" class="nav-item">导入知识库</a>
+                    <a href="#" class="nav-item">关于我们</a>
+                    <a href="#" class="nav-item">联系方式</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <div class="search-bar">
+        <div class="container">
+            <div class="search-container">
+                <input type="text" class="search-input" value="2型糖尿病的一线治疗药物有哪些？" placeholder="请输入您的临床问题...">
+                <button class="search-button">搜索</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="content-section">
+            <div class="main-content">
+                <div class="answer-container">
+                    <div class="question">
+                        <p class="question-text">2型糖尿病的一线治疗药物有哪些？</p>
+                        <div class="metadata">
+                            <span>知识库：内科知识库</span>
+                            <span>查询时间：2025-11-15 14:30</span>
+                        </div>
+                    </div>
+                    
+                    <div class="answer">
+                        <p>根据最新的临床指南，2型糖尿病的一线治疗药物主要包括以下几类：</p>
+                        
+                        <h3>常用一线药物</h3>
+                        <ol>
+                            <li><strong>二甲双胍（Metformin）</strong>：是大多数指南推荐的首选药物，可降低肝糖输出，增加胰岛素敏感性。具有不增加体重、不易发生低血糖等优点。</li>
+                            <li><strong>磺脲类药物</strong>：如格列美脲、格列吡嗪等，通过刺激胰岛β细胞分泌胰岛素发挥降糖作用。</li>
+                            <li><strong>α-糖苷酶抑制剂</strong>：如阿卡波糖，通过延缓碳水化合物的吸收来控制餐后血糖。</li>
+                        </ol>
+                        
+                        <h3>近年来推荐的新型一线药物</h3>
+                        <ul>
+                            <li><strong>SGLT-2抑制剂</strong>（钠-葡萄糖共转运蛋白2抑制剂）：如恩格列净、达格列净，通过抑制肾脏对葡萄糖的重吸收而促进尿糖排泄。这类药物还表现出心血管和肾脏保护作用。</li>
+                            <li><strong>GLP-1受体激动剂</strong>：如利拉鲁肽、司美格鲁肽，可刺激胰岛素分泌、抑制胰高糖素分泌，同时具有减轻体重的附加优势。</li>
+                            <li><strong>DPP-4抑制剂</strong>：如西格列汀、沙格列汀，通过抑制GLP-1的降解来增加内源性GLP-1水平，具有良好的耐受性和较低的低血糖风险。</li>
+                        </ul>
+                        
+                        <h3>中西医结合治疗方案</h3>
+                        <p>结合中医理论，2型糖尿病（消渴症）可辨证论治：</p>
+                        <ul>
+                            <li><strong>气阴两虚型</strong>：可配合生脉散、玉泉丸等中药</li>
+                            <li><strong>肝肾阴虚型</strong>：常用六味地黄丸加减</li>
+                            <li><strong>胃热炽盛型</strong>：可考虑玉女煎加减</li>
+                        </ul>
+                        <p>中西医结合治疗可在降糖同时，调整机体整体功能，提高临床疗效。</p>
+                        
+                        <h3>药物选择原则</h3>
+                        <p>2型糖尿病的药物治疗应个体化，需要考虑以下因素：</p>
+                        <ul>
+                            <li>患者的具体血糖控制目标</li>
+                            <li>伴随疾病（如心血管疾病、肾功能不全）</li>
+                            <li>低血糖风险</li>
+                            <li>体重状况</li>
+                            <li>药物不良反应</li>
+                            <li>费用和可及性</li>
+                        </ul>
+                        
+                        <p>对于大多数新诊断的2型糖尿病患者，如无禁忌证，二甲双胍仍是首选的起始药物。对于伴有心血管疾病或有心血管高危因素的患者，可优先考虑具有心血管获益的SGLT-2抑制剂或GLP-1受体激动剂。</p>
+                    
+                        <div class="sources">
+                            <h4 class="sources-title">参考来源</h4>
+                            <div class="source-item">
+                                <span>[1] American Diabetes Association. Standards of Medical Care in Diabetes—2025. Diabetes Care. 2025;46(Supplement 1).</span>
+                            </div>
+                            <div class="source-item">
+                                <span>[2] 中华医学会糖尿病学分会. 中国2型糖尿病防治指南(2020年版). 中华糖尿病杂志. 2021;13(4):315-409.</span>
+                            </div>
+                            <div class="source-item">
+                                <span>[3] Davies MJ, et al. Management of hyperglycemia in type 2 diabetes, 2022. A consensus report by the American Diabetes Association (ADA) and the European Association for the Study of Diabetes (EASD). Diabetes Care. 2022;45(11):2753-2786.</span>
+                            </div>
+                            <div class="source-item">
+                                <span>[4] 中国中西医结合学会. 2型糖尿病中西医结合防治指南. 中国中西医结合杂志. 2022.</span>
+                            </div>
+                        </div>
+                    
+                        <div class="feedback-section">
+                            <span class="feedback-question">这个回答对您有帮助吗？</span>
+                            <div class="feedback-buttons">
+                                <button class="feedback-btn positive">👍 有帮助</button>
+                                <button class="feedback-btn">部分有用</button>
+                                <button class="feedback-btn negative">👎 没帮助</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="knowledge-base-selector">
+                    <h3 class="selector-title">选择知识库</h3>
+                    <div class="kb-options">
+                        <div class="kb-option active">全部知识库</div>
+                        <div class="kb-option">内科知识库</div>
+                        <div class="kb-option">外科知识库</div>
+                        <div class="kb-option">中医知识库</div>
+                        <div class="kb-option">妇产科知识库</div>
+                        <div class="kb-option">儿科知识库</div>
+                        <div class="kb-option">我的知识库</div>
+                    </div>
+                </div>
+                
+                <div class="related-questions">
+                    <h3 class="related-title">相关问题</h3>
+                    <ul class="question-list">
+                        <li class="question-item">
+                            <a href="#" class="question-link">二甲双胍的常见不良反应有哪些？</a>
+                        </li>
+                        <li class="question-item">
+                            <a href="#" class="question-link">SGLT-2抑制剂的心血管获益机制是什么？</a>
+                        </li>
+                        <li class="question-item">
+                            <a href="#" class="question-link">糖尿病患者何时需要开始胰岛素治疗？</a>
+                        </li>
+                        <li class="question-item">
+                            <a href="#" class="question-link">2型糖尿病患者如何调整药物以避免低血糖？</a>
+                        </li>
+                        <li class="question-item">
+                            <a href="#" class="question-link">GLP-1受体激动剂在减重治疗中的应用</a>
+                        </li>
+                        <li class="question-item">
+                            <a href="#" class="question-link">中药对糖尿病周围神经病变的疗效如何？</a>
+                        </li>
+                        <li class="question-item">
+                            <a href="#" class="question-link">老年糖尿病患者的降糖目标应如何制定？</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>© 2025 临床知识库 - 基于deepseek大模型构建</p>
+            <p style="font-size: 14px; margin-top: 10px; color: #aaa;">医者仁心 · 科技赋能</p>
+        </div>
+    </footer>
+
+    <script>
+        // 知识库选择交互
+        document.querySelectorAll('.kb-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.kb-option').forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        // 反馈按钮交互
+        document.querySelectorAll('.feedback-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.feedback-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                this.style.backgroundColor = this.classList.contains('positive') ? '#eafaf1' : 
+                                             this.classList.contains('negative') ? '#fff9f9' : '#f5f5f5';
+                this.style.borderColor = this.classList.contains('positive') ? '#2c974b' :
+                                          this.classList.contains('negative') ? '#d62c2c' : '#ccc';
+                
+                console.log('用户反馈:', this.textContent.trim());
+                // 这里可以添加AJAX请求，发送反馈到服务器
+            });
+        });
+    </script>
+</body>
+</html>

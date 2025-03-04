@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导入知识库 - 临床知识库系统</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fc;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #d62c2c;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            position: relative;
+            padding: 5px 0;
+        }
+        
+        .nav-item:after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: white;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        
+        .page-title {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #333;
+            text-align: center;
+            padding-top: 20px;
+            position: relative;
+            font-weight: 500;
+        }
+        
+        .page-title:after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            bottom: -10px;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: #d62c2c;
+        }
+        
+        .import-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            padding: 35px;
+            margin-bottom: 40px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: #333;
+            font-size: 15px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .form-input:focus {
+            border-color: #d62c2c;
+            box-shadow: 0 0 0 2px rgba(214, 44, 44, 0.1);
+            outline: none;
+        }
+        
+        textarea.form-input {
+            height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: white;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><path fill='%23888' d='M8,12 L2,6 L14,6 L8,12 Z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
+        }
+        
+        .form-select:focus {
+            border-color: #d62c2c;
+            box-shadow: 0 0 0 2px rgba(214, 44, 44, 0.1);
+            outline: none;
+        }
+        
+        .file-upload {
+            border: 2px dashed #e0e0e0;
+            padding: 35px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+            background-color: #fcfcfc;
+        }
+        
+        .file-upload:hover {
+            border-color: #d62c2c;
+            background-color: #fff9f9;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #d62c2c;
+            margin-bottom: 15px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background-color: #d62c2c;
+            color: white;
+            box-shadow: 0 4px 8px rgba(214,44,44,0.2);
+        }
+        
+        .btn-primary:hover {
+            background-color: #b71c1c;
+            box-shadow: 0 6px 12px rgba(214,44,44,0.3);
+        }
+        
+        .btn-cancel {
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-cancel:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .formats-info {
+            margin-top: 15px;
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 25px;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+            margin-right: 5px;
+        }
+        
+        .tab:hover {
+            color: #d62c2c;
+        }
+        
+        .tab.active {
+            background-color: white;
+            border-color: #e0e0e0;
+            color: #d62c2c;
+            margin-bottom: -1px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+        }
+        
+        /* 添加文件列表样式 */
+        #file-list {
+            margin-top: 15px;
+            text-align: left;
+        }
+        
+        #file-list p {
+            background-color: #f9f9f9;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        #file-list p:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">临床知识库 | Clinical Knowledge Base</div>
+                <nav class="nav-menu">
+                    <a href="clinical_knowledge_prototype.html" class="nav-item">首页</a>
+                    <a href="#" class="nav-item">导入知识库</a>
+                    <a href="#" class="nav-item">关于我们</a>
+                    <a href="#" class="nav-item">联系方式</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <h1 class="page-title">导入自定义知识库</h1>
+        
+        <div class="import-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="file">文件导入</div>
+                <div class="tab" data-tab="text">文本导入</div>
+                <div class="tab" data-tab="api">API导入</div>
+            </div>
+            
+            <div class="tab-content active" id="file-tab">
+                <div class="form-group">
+                    <label class="form-label">知识库名称</label>
+                    <input type="text" class="form-input" placeholder="请输入知识库名称（如：内分泌疾病知识库）">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">选择分类</label>
+                    <select class="form-select">
+                        <option value="">请选择知识库分类</option>
+                        <option value="internal">内科</option>
+                        <option value="surgery">外科</option>
+                        <option value="pediatrics">儿科</option>
+                        <option value="obs-gyn">妇产科</option>
+                        <option value="tcm">中医</option>
+                        <option value="other">其他专科</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">知识库描述</label>
+                    <textarea class="form-input" placeholder="请描述该知识库的内容、用途等信息，有助于系统更好地理解和检索您的知识"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">上传知识库文件</label>
+                    <div class="file-upload" id="drop-area">
+                        <div class="upload-icon">📤</div>
+                        <p>点击此处或拖拽文件到此区域上传</p>
+                        <input type="file" id="file-input" class="file-input" multiple>
+                        <div id="file-list"></div>
+                    </div>
+                    <p class="formats-info">支持的格式: PDF, TXT, DOC, DOCX, JSON, CSV, XML (单个文件最大 50MB，可同时上传多个文件)</p>
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-cancel">取消</button>
+                    <button class="btn btn-primary">导入知识库</button>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="text-tab">
+                <div class="form-group">
+                    <label class="form-label">知识库名称</label>
+                    <input type="text" class="form-input" placeholder="请输入知识库名称（如：临床用药参考）">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">选择分类</label>
+                    <select class="form-select">
+                        <option value="">请选择知识库分类</option>
+                        <option value="internal">内科</option>
+                        <option value="surgery">外科</option>
+                        <option value="pediatrics">儿科</option>
+                        <option value="obs-gyn">妇产科</option>
+                        <option value="tcm">中医</option>
+                        <option value="other">其他专科</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">粘贴知识库内容</label>
+                    <textarea class="form-input" style="height: 250px" placeholder="请在此处粘贴知识库文本内容（支持结构化和非结构化文本）"></textarea>
+                </div>
+                
+                <div class="btn-container">
+                    <button class="btn btn-cancel">取消</button>
+                    <button class="btn btn-primary">导入知识库</button>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="api-tab">
+                <div class="form-group">
+                    <label class="form-label">知识库名称</label>
+                    <input type="text" class="form-input" placeholder="请输入知识库名称（如：远程医疗数据库）">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">选择分类</label>
+                    <select class="form-select">
+                        <option value="">请选择知识库分类</option>
+                        <option value="internal">内科</option>
+                        <option value="surgery">外科</option>
+                        <option value="pediatrics">儿科</option>
+                        <option value="obs-gyn">妇产科</option>
+                        <option value="tcm">中医</option>
+                        <option value="other">其他专科</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">API端点URL</label>
+                    <input type="text" class="form-input" placeholder="https://api.example.com/knowledge-base">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">访问凭证 (可选)</label>
+                    <input type="text" class="form-input" placeholder="API密钥或访问令牌">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">请求头 (可选)</label>
+
+</html></body>    </script>        }            else return (bytes / 1048576).toFixed(1) + ' MB';            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';            if (bytes < 1024) return bytes + ' B';        function formatFileSize(bytes) {                }            }                }                    fileList.appendChild(fileInfo);                    fileInfo.textContent = `${file.name} (${formatFileSize(file.size)})`;                    const fileInfo = document.createElement('p');                    const file = fileInput.files[i];                for (let i = 0; i < fileInput.files.length; i++) {                fileList.innerHTML = '';            if (fileInput.files.length) {        function handleFiles() {                });            }                handleFiles();                fileInput.files = e.dataTransfer.files;            if (e.dataTransfer.files.length) {            dropArea.style.backgroundColor = '#fcfcfc';            dropArea.style.borderColor = '#e0e0e0';            e.preventDefault();        dropArea.addEventListener('drop', (e) => {                });            dropArea.style.backgroundColor = '#fcfcfc';            dropArea.style.borderColor = '#e0e0e0';        dropArea.addEventListener('dragleave', () => {                });            dropArea.style.backgroundColor = '#fff9f9';            dropArea.style.borderColor = '#d62c2c';            e.preventDefault();        dropArea.addEventListener('dragover', (e) => {                fileInput.addEventListener('change', handleFiles);                dropArea.addEventListener('click', () => fileInput.click());                const fileList = document.getElementById('file-list');        const fileInput = document.getElementById('file-input');        const dropArea = document.getElementById('drop-area');        // 文件上传区域的交互                });            });                document.getElementById(tabId + '-tab').classList.add('active');                const tabId = this.getAttribute('data-tab');                // 显示对应的内容                                });                    content.classList.remove('active');                document.querySelectorAll('.tab-content').forEach(content => {                // 隐藏所有内容                                this.classList.add('active');                // 给当前点击的标签页添加active类                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));                // 移除所有标签页的active类            tab.addEventListener('click', function() {        document.querySelectorAll('.tab').forEach(tab => {        // 切换标签页的简单脚本    <script>    <!-- 保持原有脚本，添加一些增强功能 -->        </footer>        </div>            <p style="font-size: 14px; margin-top: 10px; color: #aaa;">医者仁心 · 科技赋能</p>            <p>© 2025 临床知识库 - 基于deepseek大模型构建</p>        <div class="container">    <footer>        </div>        </div>            </div>                </div>                    <button class="btn btn-primary">连接并导入</button>                    <button class="btn btn-cancel">取消</button>                <div class="btn-container">                                </div>                    <textarea class="form-input" placeholder='{"Content-Type": "application/json", "Authorization": "Bearer xxxxx"}'></textarea>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中医知识库 - 临床知识库系统</title>
+    <style>
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f7f2;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: #d62c2c;
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 25px;
+        }
+        
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            font-size: 16px;
+            position: relative;
+            padding: 5px 0;
+        }
+        
+        .nav-item:after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: white;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-item:hover:after {
+            width: 100%;
+        }
+        
+        .hero-section {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23d62c2c20" d="M30,30 C40,20 60,20 70,30 C80,40 80,60 70,70 C60,80 40,80 30,70 C20,60 20,40 30,30 Z"/></svg>'), linear-gradient(135deg, #8b572a 0%, #d62c2c 100%);
+            background-size: 150px 150px, 100% 100%;
+            color: white;
+            padding: 50px 0; /* 减小了上下padding，从70px改为50px */
+            text-align: center;
+            margin-bottom: 30px; /* 略微减小了下方的margin */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-title {
+            font-size: 34px; /* 略微减小了标题尺寸 */
+            margin-bottom: 15px; /* 减小了标题下方的margin */
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .hero-description {
+            font-size: 16px; /* 略微减小了描述文字大小 */
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+        
+        .search-section {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+            border: 1px solid #f0e8e0;
+        }
+        
+        .search-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #8b572a;
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .search-title:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background-color: #d62c2c;
+        }
+        
+        .search-box {
+            display: flex;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 1px solid #e8e0d5;
+            border-radius: 8px 0 0 8px;
+            font-size: 16px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .search-button {
+            background-color: #d62c2c;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 0 8px 8px 0;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .search-button:hover {
+            background-color: #b71c1c;
+        }
+        
+        .categories-title {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #8b572a;
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .categories-title:after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: #d62c2c;
+        }
+        
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 992px) {
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .category-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #f0e8e0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .category-card:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background-color: #d62c2c;
+        }
+        
+        .category-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #f9f2e8;
+            color: #8b572a;
+            font-size: 30px;
+        }
+        
+        .category-name {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #8b572a;
+            font-weight: 500;
+        }
+        
+        .category-description {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .category-link {
+            display: inline-block;
+            color: #d62c2c;
+            text-decoration: none;
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 2px;
+        }
+        
+        .category-link:after {
+            content: "";
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #d62c2c;
+            transition: width 0.3s ease;
+        }
+        
+        .category-link:hover:after {
+            width: 100%;
+        }
+        
+        .popular-section {
+            background-color: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 40px;
+            border: 1px solid #f0e8e0;
+        }
+        
+        .section-title {
+            font-size: 24px;
+            margin-bottom: 25px;
+            color: #8b572a;
+            font-weight: 500;
+            position: relative;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0e8e0;
+        }
+        
+        .popular-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .popular-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #f0e8e0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .popular-item:last-child {
+            border-bottom: none;
+        }
+        
+        .popular-number {
+            font-size: 20px;
+            font-weight: 600;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f9f2e8;
+            color: #d62c2c;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .popular-text {
+            flex: 1;
+        }
+        
+        .popular-link {
+            font-size: 16px;
+            color: #333;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .popular-link:hover {
+            color: #d62c2c;
+        }
+        
+        .popular-meta {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .footer {
+            background-color: #333;
+            color: white;
+            padding: 40px 0;
+            margin-top: 40px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+        
+        .footer-about h3 {
+            font-size: 20px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .footer-about p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+            color: #ccc;
+        }
+        
+        .footer-links h3 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .footer-links ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+        }
+        
+        .footer-contact h3 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            color: #888;
+            border-top: 1px solid #444;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">临床知识库 | Clinical Knowledge Base</div>
+                <nav class="nav-menu">
+                    <a href="clinical_knowledge_prototype.html" class="nav-item">首页</a>
+                    <a href="import_knowledge_base.html" class="nav-item">导入知识库</a>
+                    <a href="#" class="nav-item">关于我们</a>
+                    <a href="#" class="nav-item">联系方式</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">中医知识库</h1>
+            <p class="hero-description">探索中华几千年的医学智慧，寻找传统中医理论与现代医学的结合点</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="search-section">
+            <h2 class="search-title">搜索中医知识</h2>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="输入症状、方剂、穴位或中医理论...">
+                <button class="search-button">搜索</button>
+            </div>
+        </div>
+
+        <h2 class="categories-title">中医知识分类</h2>
+        <div class="categories-grid">
+            <div class="category-card">
+                <div class="category-icon">阴阳</div>
+                <h3 class="category-name">中医基础理论</h3>
+                <p class="category-description">阴阳五行、脏腑气血、经络学说等中医基础理论知识</p>
+                <a href="#" class="category-link">浏览内容</a>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">方</div>
+                <h3 class="category-name">方剂学</h3>
+                <p class="category-description">常用中药方剂的组成、功效、主治及配伍原则</p>
+                <a href="#" class="category-link">浏览内容</a>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">针</div>
+                <h3 class="category-name">针灸学</h3>
+                <p class="category-description">经络穴位、针刺疗法与灸法技术及应用</p>
+                <a href="#" class="category-link">浏览内容</a>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">药</div>
+                <h3 class="category-name">中药学</h>
+                <p class="category-description">中药的性味归经、功效主治及应用特点</p>
+                <a href="#" class="category-link">浏览内容</a>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">诊</div>
+                <h3 class="category-name">中医诊断学</h3>
+                <p class="category-description">望闻问切四诊合参与辨证施治体系</p>
+                <a href="#" class="category-link">浏览内容</a>
+            </div>
+            <div class="category-card">
+                <div class="category-icon">证</div>
+                <h3 class="category-name">中医内科</h3>
+                <p class="category-description">中医对内科常见疾病的认识与治疗方法</p>
+                <a href="#" class="category-link">浏览内容</a>
+            </div>
+        </div>
+
+        <div class="popular-section">
+            <h2 class="section-title">热门问题</h2>
+            <ul class="popular-list">
+                <li class="popular-item">
+                    <div class="popular-number">1</div>
+                    <div class="popular-text">
+                        <a href="#" class="popular-link">如何从中医角度理解和治疗失眠？</a>
+                        <div class="popular-meta">1532 次浏览</div>
+                    </div>
+                </li>
+                <li class="popular-item">
+                    <div class="popular-number">2</div>
+                    <div class="popular-text">
+                        <a href="#" class="popular-link">中医调理胃肠功能紊乱的方法有哪些？</a>
+                        <div class="popular-meta">1208 次浏览</div>
+                    </div>
+                </li>
+                <li class="popular-item">
+                    <div class="popular-number">3</div>
+                    <div class="popular-text">
+                        <a href="#" class="popular-link">中药配伍禁忌有哪些需要特别注意的？</a>
+                        <div class="popular-meta">876 次浏览</div>
+                    </div>
+                </li>
+                <li class="popular-item">
+                    <div class="popular-number">4</div>
+                    <div class="popular-text">
+                        <a href="#" class="popular-link">冬病夏治的原理及适用人群？</a>
+                        <div class="popular-meta">745 次浏览</div>
+                    </div>
+                </li>
+                <li class="popular-item">
+                    <div class="popular-number">5</div>
+                    <div class="popular-text">
+                        <a href="#" class="popular-link">六味地黄丸与知柏地黄丸的区别和应用？</a>
+                        <div class="popular-meta">689 次浏览</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <h3>关于中医知识库</h3>
+                    <p>临床知识库系统-中医知识库集合了几千年中华医学精髓，结合现代医学知识，为医生和医学学习者提供便捷、专业的中医知识检索与学习平台。</p>
+                    <p>我们致力于推动中西医结合，服务于临床医疗实践，提高医疗服务质量。</p>
+                </div>
+                <div class="footer-links">
+                    <h3>快速链接</h3>
+                    <ul>
+                        <li><a href="#">中医基础理论</a></li>
+                        <li><a href="#">中药学</a></li>
+                        <li><a href="#">方剂学</a></li>
+                        <li><a href="#">针灸学</a></li>
+                        <li><a href="#">中医诊断</a></li>
+                    </ul>
+                </div>
+                <div class="footer-contact">
+                    <h3>联系我们</h3>
+                    <div class="contact-item">
+                        <span>📧</span>
+                        <span>tcm@clinicalknowledge.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <span>📞</span>
+                        <span>400-888-1234</span>
+                    </div>
+                    <div class="contact-item">
+                        <span>🏢</span>
+                        <span>北京市海淀区中关村南大街5号</span>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                © 2025 临床知识库 - 中医知识分库. 基于deepseek大模型构建. 保留所有权利.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // 在实际应用中，这里可以添加导航到各分类页面的代码
+                const categoryName = this.querySelector('.category-name').textContent;
+                console.log('用户点击了分类:', categoryName);
+            });
+        });
+        
+        document.querySelector('.search-button').addEventListener('click', function() {
+            const searchQuery = document.querySelector('.search-input').value.trim();
+            if (searchQuery) {
+                // 在实际应用中，这里可以添加搜索功能的代码
+                console.log('用户搜索了:', searchQuery);
+                // window.location.href = `search-results.html?q=${encodeURIComponent(searchQuery)}&category=tcm`;
+            } else {
+                alert('请输入搜索内容');
+            }
+        });
+    </script>
+</body>
+</html>
